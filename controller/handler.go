@@ -14,6 +14,10 @@ func NewRouter() *gin.Engine {
 	r.DELETE("/author/:authorId", DeleteAuthor)
 
 	//book
+	r.GET("/books", GetAllBooks)
+	r.POST("/book", PostBook)
+	r.PUT("/book/:bookId", PutBook)
+	r.DELETE("/book/:bookId", DeleteBook)
 
 	return r
 }
