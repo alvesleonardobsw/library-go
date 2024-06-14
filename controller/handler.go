@@ -10,6 +10,8 @@ func NewRouter() *gin.Engine {
 	//author
 	r.GET("/authors", GetAllAuthors)
 	r.POST("/author", PostAuthor)
+	r.PUT("/author/:authorId", PutAuthor)
+	r.DELETE("/author/:authorId", DeleteAuthor)
 
 	//book
 
