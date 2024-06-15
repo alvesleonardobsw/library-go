@@ -2,18 +2,21 @@ package controller
 
 import (
 	"github.com/alvesleonardobsw/library-go/domain/author"
+	"github.com/alvesleonardobsw/library-go/domain/book"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
 	authorService *author.AuthorService
+	bookService   *book.BookService
 }
 
-func NewRouter(authorService *author.AuthorService) *gin.Engine {
+func NewRouter(authorService *author.AuthorService, bookService *book.BookService) *gin.Engine {
 	r := gin.Default()
 
 	h := Handler{
 		authorService: authorService,
+		bookService:   bookService,
 	}
 
 	//author

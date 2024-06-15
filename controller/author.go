@@ -25,6 +25,7 @@ func (h *Handler) PostAuthor(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"id": newAuthor.Id})
 }
 
 func (h *Handler) PutAuthor(c *gin.Context) {

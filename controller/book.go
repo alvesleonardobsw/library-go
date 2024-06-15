@@ -6,13 +6,10 @@ import (
 
 	"github.com/alvesleonardobsw/library-go/domain"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
-var booksList = make([]domain.Book, 0)
-
 func (h *Handler) GetAllBooks(c *gin.Context) {
-	c.JSON(http.StatusOK, booksList)
+	c.JSON(http.StatusOK, h.bookService.GetAll())
 }
 
 func (h *Handler) PostBook(c *gin.Context) {
@@ -24,8 +21,11 @@ func (h *Handler) PostBook(c *gin.Context) {
 		return
 	}
 
-	newBook.Id = uuid.New().String()
-	booksList = append(booksList, newBook)
+	if err := h.bookService.Create(&newBook); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"id": newBook.Id})
 }
 
 func (h *Handler) PutBook(c *gin.Context) {
@@ -38,25 +38,20 @@ func (h *Handler) PutBook(c *gin.Context) {
 		return
 	}
 
-	for i := 0; i < len(booksList); i++ {
-		if bookId == booksList[i].Id {
-			booksList[i].Name = editedBook.Name
-			booksList[i].Genre = editedBook.Genre
-			c.JSON(http.StatusOK, booksList[i])
-			return
-		}
+	book, err := h.bookService.Update(bookId, editedBook)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	c.Status(http.StatusNotFound)
+
+	c.JSON(http.StatusOK, book)
 }
 
 func (h *Handler) DeleteBook(c *gin.Context) {
 	bookId := c.Param("bookId")
 
-	for i := 0; i < len(booksList); i++ {
-		if bookId == booksList[i].Id {
-			booksList = append(booksList[:i], booksList[i+1:]...)
-			return
-		}
+	if err := h.bookService.Delete(bookId); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	c.Status(http.StatusNotFound)
 }
