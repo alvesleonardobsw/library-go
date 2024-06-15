@@ -11,11 +11,11 @@ import (
 
 var booksList = make([]domain.Book, 0)
 
-func GetAllBooks(c *gin.Context) {
+func (h *Handler) GetAllBooks(c *gin.Context) {
 	c.JSON(http.StatusOK, booksList)
 }
 
-func PostBook(c *gin.Context) {
+func (h *Handler) PostBook(c *gin.Context) {
 	var newBook domain.Book
 
 	if err := c.BindJSON(&newBook); err != nil {
@@ -28,7 +28,7 @@ func PostBook(c *gin.Context) {
 	booksList = append(booksList, newBook)
 }
 
-func PutBook(c *gin.Context) {
+func (h *Handler) PutBook(c *gin.Context) {
 	bookId := c.Param("bookId")
 	var editedBook domain.Book
 
@@ -49,7 +49,7 @@ func PutBook(c *gin.Context) {
 	c.Status(http.StatusNotFound)
 }
 
-func DeleteBook(c *gin.Context) {
+func (h *Handler) DeleteBook(c *gin.Context) {
 	bookId := c.Param("bookId")
 
 	for i := 0; i < len(booksList); i++ {

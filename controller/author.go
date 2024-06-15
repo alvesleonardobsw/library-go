@@ -6,16 +6,13 @@ import (
 
 	"github.com/alvesleonardobsw/library-go/domain"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
-var authorsList = make([]domain.Author, 0)
-
-func GetAllAuthors(c *gin.Context) {
-	c.JSON(http.StatusOK, authorsList)
+func (h *Handler) GetAllAuthors(c *gin.Context) {
+	c.JSON(http.StatusOK, h.authorService.GetAll())
 }
 
-func PostAuthor(c *gin.Context) {
+func (h *Handler) PostAuthor(c *gin.Context) {
 	var newAuthor domain.Author
 
 	if err := c.BindJSON(&newAuthor); err != nil {
@@ -24,11 +21,13 @@ func PostAuthor(c *gin.Context) {
 		return
 	}
 
-	newAuthor.Id = uuid.New().String()
-	authorsList = append(authorsList, newAuthor)
+	if err := h.authorService.Create(&newAuthor); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 }
 
-func PutAuthor(c *gin.Context) {
+func (h *Handler) PutAuthor(c *gin.Context) {
 	authorId := c.Param("authorId")
 	var editedAuthor domain.Author
 
@@ -38,25 +37,20 @@ func PutAuthor(c *gin.Context) {
 		return
 	}
 
-	for i := 0; i < len(authorsList); i++ {
-		if authorId == authorsList[i].Id {
-			authorsList[i].Name = editedAuthor.Name
-			authorsList[i].LastName = editedAuthor.LastName
-			c.JSON(http.StatusOK, authorsList[i])
-			return
-		}
+	author, err := h.authorService.Update(authorId, editedAuthor)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	c.Status(http.StatusNotFound)
+
+	c.JSON(http.StatusOK, author)
 }
 
-func DeleteAuthor(c *gin.Context) {
+func (h *Handler) DeleteAuthor(c *gin.Context) {
 	authorId := c.Param("authorId")
 
-	for i := 0; i < len(authorsList); i++ {
-		if authorId == authorsList[i].Id {
-			authorsList = append(authorsList[:i], authorsList[i+1:]...)
-			return
-		}
+	if err := h.authorService.Delete(authorId); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	c.Status(http.StatusNotFound)
 }

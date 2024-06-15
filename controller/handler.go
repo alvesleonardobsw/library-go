@@ -1,23 +1,32 @@
 package controller
 
 import (
+	"github.com/alvesleonardobsw/library-go/domain/author"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter() *gin.Engine {
+type Handler struct {
+	authorService *author.AuthorService
+}
+
+func NewRouter(authorService *author.AuthorService) *gin.Engine {
 	r := gin.Default()
 
+	h := Handler{
+		authorService: authorService,
+	}
+
 	//author
-	r.GET("/authors", GetAllAuthors)
-	r.POST("/author", PostAuthor)
-	r.PUT("/author/:authorId", PutAuthor)
-	r.DELETE("/author/:authorId", DeleteAuthor)
+	r.GET("/authors", h.GetAllAuthors)
+	r.POST("/author", h.PostAuthor)
+	r.PUT("/author/:authorId", h.PutAuthor)
+	r.DELETE("/author/:authorId", h.DeleteAuthor)
 
 	//book
-	r.GET("/books", GetAllBooks)
-	r.POST("/book", PostBook)
-	r.PUT("/book/:bookId", PutBook)
-	r.DELETE("/book/:bookId", DeleteBook)
+	r.GET("/books", h.GetAllBooks)
+	r.POST("/book", h.PostBook)
+	r.PUT("/book/:bookId", h.PutBook)
+	r.DELETE("/book/:bookId", h.DeleteBook)
 
 	return r
 }
