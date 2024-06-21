@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres
+    volumes:
+      - ./01-library.sql:/docker-entrypoint-initdb.d/01-library.sql
+      - ./02-library.sql:/docker-entrypoint-initdb.d/02-library.sql
+    environment:
+      POSTGRES_PASSWORD: "1234"
+    ports:
+      - "5432:5432"

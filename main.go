@@ -1,13 +1,25 @@
 package main
 
 import (
+	"log"
+
 	"github.com/alvesleonardobsw/library-go/controller"
 	"github.com/alvesleonardobsw/library-go/domain/author"
 	"github.com/alvesleonardobsw/library-go/domain/book"
+	"github.com/alvesleonardobsw/library-go/repository"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	authorService := author.NewAuthorService()
+	db, err := sqlx.Connect("postgres", "host=localhost port=5432 user=postgres password=1234 dbname=library sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	authorRepository := repository.NewAuthorRepository(db)
+
+	authorService := author.NewAuthorService(authorRepository)
 	bookService := book.NewBookService()
 
 	r := controller.NewRouter(authorService, bookService)
