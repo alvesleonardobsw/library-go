@@ -1,19 +1,19 @@
 package author
 
 import (
-	"fmt"
-
 	"github.com/alvesleonardobsw/library-go/domain"
+	"github.com/alvesleonardobsw/library-go/repository"
 	"github.com/google/uuid"
 )
 
 type AuthorService struct {
+	repository *repository.AuthorRepository
 }
 
-var authorsList = make([]domain.Author, 0)
-
-func NewAuthorService() *AuthorService {
-	return &AuthorService{}
+func NewAuthorService(repository *repository.AuthorRepository) *AuthorService {
+	return &AuthorService{
+		repository: repository,
+	}
 }
 
 func (as *AuthorService) Create(author *domain.Author) error {
@@ -23,37 +23,29 @@ func (as *AuthorService) Create(author *domain.Author) error {
 		return err
 	}
 
-	authorsList = append(authorsList, *author)
-
-	return nil
+	return as.repository.Insert(author)
 }
 
-func (as *AuthorService) GetAll() []domain.Author {
-	return authorsList
+func (as *AuthorService) GetAll() ([]domain.Author, error) {
+	return as.repository.FindAll()
 }
 
-func (as *AuthorService) Update(authorId string, editedAuthor domain.Author) (*domain.Author, error) {
-
+func (as *AuthorService) Update(authorId string, editedAuthor *domain.Author) (*domain.Author, error) {
 	if err := editedAuthor.Validate(); err != nil {
 		return nil, err
 	}
 
-	for i := 0; i < len(authorsList); i++ {
-		if authorId == authorsList[i].Id {
-			authorsList[i].Name = editedAuthor.Name
-			authorsList[i].LastName = editedAuthor.LastName
-			return &authorsList[i], nil
-		}
+	if err := as.repository.Update(authorId, editedAuthor); err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("could not found author with id %s", authorId)
+
+	return editedAuthor, nil
 }
 
 func (as *AuthorService) Delete(authorId string) error {
-	for i := 0; i < len(authorsList); i++ {
-		if authorId == authorsList[i].Id {
-			authorsList = append(authorsList[:i], authorsList[i+1:]...)
-			return nil
-		}
+	if err := as.repository.Delete(authorId); err != nil {
+		return err
 	}
-	return fmt.Errorf("could not found author with id %s", authorId)
+
+	return nil
 }

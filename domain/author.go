@@ -3,9 +3,9 @@ package domain
 import "fmt"
 
 type Author struct {
-	Name     string `json:"name"`
-	LastName string `json:"lastName"`
-	Id       string `json:"id"`
+	Name     string `json:"name" db:"name"`
+	LastName string `json:"lastName" db:"lastname"`
+	Id       string `json:"id" db:"idauthor"`
 }
 
 func (a *Author) Validate() error {

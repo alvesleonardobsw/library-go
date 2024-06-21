@@ -9,7 +9,14 @@ import (
 )
 
 func (h *Handler) GetAllAuthors(c *gin.Context) {
-	c.JSON(http.StatusOK, h.authorService.GetAll())
+	authors, err := h.authorService.GetAll()
+	if err != nil {
+		fmt.Println(err.Error())
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, authors)
 }
 
 func (h *Handler) PostAuthor(c *gin.Context) {
@@ -38,7 +45,7 @@ func (h *Handler) PutAuthor(c *gin.Context) {
 		return
 	}
 
-	author, err := h.authorService.Update(authorId, editedAuthor)
+	author, err := h.authorService.Update(authorId, &editedAuthor)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
