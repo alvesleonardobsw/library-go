@@ -1,19 +1,19 @@
 package book
 
 import (
-	"fmt"
-
 	"github.com/alvesleonardobsw/library-go/domain"
+	"github.com/alvesleonardobsw/library-go/repository"
 	"github.com/google/uuid"
 )
 
 type BookService struct {
+	repository *repository.BookRepository
 }
 
-var booksList = make([]domain.Book, 0)
-
-func NewBookService() *BookService {
-	return &BookService{}
+func NewBookService(repository *repository.BookRepository) *BookService {
+	return &BookService{
+		repository: repository,
+	}
 }
 
 func (as *BookService) Create(book *domain.Book) error {
@@ -23,37 +23,30 @@ func (as *BookService) Create(book *domain.Book) error {
 		return err
 	}
 
-	booksList = append(booksList, *book)
-
-	return nil
+	return as.repository.Insert(book)
 }
 
-func (as *BookService) GetAll() []domain.Book {
-	return booksList
+func (as *BookService) GetAll() ([]domain.Book, error) {
+	return as.repository.FindAll()
 }
 
-func (as *BookService) Update(bookId string, editedBook domain.Book) (*domain.Book, error) {
+func (as *BookService) Update(bookId string, editedBook *domain.Book) (*domain.Book, error) {
 
 	if err := editedBook.ValidateBook(); err != nil {
 		return nil, err
 	}
 
-	for i := 0; i < len(booksList); i++ {
-		if bookId == booksList[i].Id {
-			booksList[i].Name = editedBook.Name
-			booksList[i].Genre = editedBook.Genre
-			return &booksList[i], nil
-		}
+	if err := as.repository.Update(bookId, editedBook); err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("could not found Book with id %s", bookId)
+
+	return editedBook, nil
 }
 
 func (as *BookService) Delete(bookId string) error {
-	for i := 0; i < len(booksList); i++ {
-		if bookId == booksList[i].Id {
-			booksList = append(booksList[:i], booksList[i+1:]...)
-			return nil
-		}
+	if err := as.repository.Delete(bookId); err != nil {
+		return err
 	}
-	return fmt.Errorf("could not found book with id %s", bookId)
+
+	return nil
 }

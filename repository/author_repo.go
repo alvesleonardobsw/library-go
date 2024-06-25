@@ -48,7 +48,7 @@ func (ar *AuthorRepository) Update(authorId string, editedAuthor *domain.Author)
 	if rows == 0 {
 		return fmt.Errorf("could not found author with id %s", authorId)
 	}
-	
+
 	return nil
 }
 

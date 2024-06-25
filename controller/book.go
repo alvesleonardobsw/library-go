@@ -9,7 +9,14 @@ import (
 )
 
 func (h *Handler) GetAllBooks(c *gin.Context) {
-	c.JSON(http.StatusOK, h.bookService.GetAll())
+	books, err := h.bookService.GetAll()
+	if err != nil {
+		fmt.Println(err.Error())
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, books)
 }
 
 func (h *Handler) PostBook(c *gin.Context) {
@@ -38,7 +45,7 @@ func (h *Handler) PutBook(c *gin.Context) {
 		return
 	}
 
-	book, err := h.bookService.Update(bookId, editedBook)
+	book, err := h.bookService.Update(bookId, &editedBook)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

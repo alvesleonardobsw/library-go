@@ -3,9 +3,9 @@ package domain
 import "fmt"
 
 type Book struct {
-	Name  string `json:"name"`
-	Genre string `json:"genre"`
-	Id    string `json:"id"`
+	Name  string `json:"name" db:"name"`
+	Genre string `json:"genre" db:"genre"`
+	Id    string `json:"id" db:"idbook"`
 }
 
 func (a *Book) ValidateBook() error {

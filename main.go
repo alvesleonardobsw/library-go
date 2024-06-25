@@ -18,9 +18,10 @@ func main() {
 	}
 
 	authorRepository := repository.NewAuthorRepository(db)
+	bookRepository := repository.NewBookRepository(db)
 
 	authorService := author.NewAuthorService(authorRepository)
-	bookService := book.NewBookService()
+	bookService := book.NewBookService(bookRepository)
 
 	r := controller.NewRouter(authorService, bookService)
 
