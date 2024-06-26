@@ -28,7 +28,7 @@ func (ar *BookRepository) FindAll() ([]domain.Book, error) {
 }
 
 func (ar *BookRepository) Insert(book *domain.Book) error {
-	_, err := ar.db.NamedExec("INSERT INTO Book (IdBook, Name, Genre) VALUES (:idbook, :name, :genre)", book)
+	_, err := ar.db.NamedExec("INSERT INTO Book (IdBook, Name, Genre, IdAuthor) VALUES (:idbook, :name, :genre, :idauthor)", book)
 
 	return err
 }
