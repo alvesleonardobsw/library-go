@@ -9,7 +9,13 @@ import (
 )
 
 func (h *Handler) GetAllAuthors(c *gin.Context) {
-	authors, err := h.authorService.GetAll()
+
+	authorsSearch := []string{}
+	name := c.Query("name")
+	lastname := c.Query("lastName")
+	authorsSearch = append(authorsSearch, name, lastname)
+
+	authors, err := h.authorService.GetAll(authorsSearch)
 	if err != nil {
 		fmt.Println(err.Error())
 		c.Status(http.StatusInternalServerError)

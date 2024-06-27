@@ -26,8 +26,8 @@ func (as *AuthorService) Create(author *domain.Author) error {
 	return as.repository.Insert(author)
 }
 
-func (as *AuthorService) GetAll() ([]domain.Author, error) {
-	return as.repository.FindAll()
+func (as *AuthorService) GetAll(authorsSearch []string) ([]domain.Author, error) {
+	return as.repository.FindAll(authorsSearch)
 }
 
 func (as *AuthorService) Update(authorId string, editedAuthor *domain.Author) (*domain.Author, error) {

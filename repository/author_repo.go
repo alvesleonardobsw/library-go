@@ -17,10 +17,19 @@ func NewAuthorRepository(db *sqlx.DB) *AuthorRepository {
 	}
 }
 
-func (ar *AuthorRepository) FindAll() ([]domain.Author, error) {
+func (ar *AuthorRepository) FindAll(authorsSearch []string) ([]domain.Author, error) {
 	authors := []domain.Author{}
 
-	if err := ar.db.Select(&authors, "SELECT * FROM Author"); err != nil {
+	query := "SELECT * FROM Author"
+
+	for i := 0; i < len(authorsSearch)-1; i++ {
+		if authorsSearch[i] != "" || authorsSearch[i+1] != "" {
+			query += fmt.Sprintf(" WHERE name ILIKE '%%%s%%' and lastName ILIKE'%%%s%%'", authorsSearch[i], authorsSearch[i+1])
+			break
+		}
+	}
+
+	if err := ar.db.Select(&authors, query); err != nil {
 		return nil, err
 	}
 
